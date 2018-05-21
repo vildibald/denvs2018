@@ -71,5 +71,4 @@ fun main(args: Array<String>) {
 
     println()
     println("Last missed pass standard NN: $lastWrong")
-//    println("Last missed pass CMRS NN: $lastWrongCMRSpline")
 }
