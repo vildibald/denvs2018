@@ -17,7 +17,7 @@ class Neuron(private val index: Int,
 
     fun think(previousLayer: Layer) {
         val t = previousLayer.sumByDouble { it.output * it.memory[index] }
-        output = activationFunction.invoke(t)
+        output = activationFunction(t)
     }
 
     fun learnFromResult(correctResult: Double) {
