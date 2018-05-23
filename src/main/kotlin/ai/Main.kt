@@ -10,10 +10,10 @@ import kotlin.math.roundToInt
 
 val trainingFile = "testData.txt"
 
-fun generateXorTrainingData(fileName: String): File {
+fun generateXorTrainingData(fileName: String, sampleCount: Int): File {
     val lines = mutableListOf<String>()
     lines.add("2 4 1")
-    for (i in 2000 downTo 0) {
+    for (i in sampleCount downTo 0) {
         val n1 = (2.0 * Math.random()).toInt()
         val n2 = (2.0 * Math.random()).toInt()
         val o = n1 xor n2
@@ -60,15 +60,14 @@ fun testNetwork(trainingData: TrainingData, brain: Brain): Int {
 
 
 fun main(args: Array<String>) {
-//    generateXorTrainingData(trainingFile)
+    // Generate file with 2000 xor samples
+//    generateXorTrainingData(trainingFile, 2000)
     val trainingData = TrainingData(File(trainingFile))
     val topology = trainingData.topology
 
-    val activationFunction = ActivationFunction()
+    val activationFunction = SimpleActivationFunction.TANH // TANH works best by far
     val brain = Brain(activationFunction, topology)
 
-    val lastWrong = testNetwork(trainingData, brain)
+    testNetwork(trainingData, brain)
 
-    println()
-    println("Last missed pass standard NN: $lastWrong")
 }

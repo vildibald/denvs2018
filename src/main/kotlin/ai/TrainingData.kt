@@ -1,13 +1,12 @@
 package ai
 
 import java.io.File
-import java.util.stream.Collectors
 
 class TrainingData(private val file: File) {
-    val topology: IntArray
+    val topology: Array<Int>
         get() {
             file.useLines {
-                return it.first().split(" ").map { it.toInt() }.toIntArray()
+                return it.first().split(" ").map { it.toInt() }.toTypedArray()
             }
 
         }
@@ -17,8 +16,8 @@ class TrainingData(private val file: File) {
     val outputs get() = collectLinesByPrefix("out: ")
 
     private fun collectLinesByPrefix(prefix: String) =
-            file.readLines().stream().filter { it.startsWith(prefix) }
+            file.readLines().asSequence().filter { it.startsWith(prefix) }
                     .map {
-                        it.split(" ").drop(1).map { it.toDouble() }.toDoubleArray()
-                    }.collect(Collectors.toList())
+                        it.split(" ").drop(1).map { it.toDouble() }.toTypedArray()
+                    }.toList()
 }
