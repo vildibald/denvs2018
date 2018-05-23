@@ -26,7 +26,9 @@ class Neuron(private val index: Int,
     }
 
     fun learnFromNextLayer(nextLayer: Layer) {
-        val delta = nextLayer.dropLast(1).zip(memory).sumByDouble { (neuron, memory) -> neuron.gradient * memory }
+        val delta = nextLayer.dropLast(1).zip(memory, { neuron, memory ->
+            neuron.gradient * memory
+        }).sumByDouble { it }
         gradient = delta * activationFunction.derivative(output)
     }
 

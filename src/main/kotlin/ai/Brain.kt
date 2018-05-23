@@ -63,8 +63,8 @@ class Brain(activationFunction: ActivationFunction, topology: Array<Int>) {
 
 
     private fun teachOutputLayer(result: Array<Double>) {
-        network.last().dropLast(1).zip(result).forEach {
-            (neuron, correctResult) -> neuron.learnFromResult(correctResult)
+        network.last().dropLast(1).zip(result).forEach { (neuron, correctResult) ->
+            neuron.learnFromResult(correctResult)
         }
     }
 
@@ -80,7 +80,7 @@ class Brain(activationFunction: ActivationFunction, topology: Array<Int>) {
         (network.lastIndex downTo 1).forEach {
             val layer = network[it]
             val previousLayer = network[it - 1]
-            layer.dropLast(1).forEach{ it.remember(previousLayer)}
+            layer.dropLast(1).forEach { it.remember(previousLayer) }
         }
     }
 
