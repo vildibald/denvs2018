@@ -1,10 +1,11 @@
 package ai
 
+import java.lang.Math.pow
 import kotlin.math.sqrt
 
 
-typealias Layer = Array<Neuron>
-typealias Network = Array<Layer>
+typealias Layer = List<Neuron>
+typealias Network = List<Layer>
 
 private const val SMOOTHING_FACTOR = 100.0
 
@@ -18,22 +19,19 @@ class Brain(activationFunction: ActivationFunction, topology: Array<Int>) {
 
     init {
         val layerCount = topology.size
-        network = Network(size = layerCount, init = {
+        network = Array(size = layerCount, init = {
             // it znamena i-tu vrstvu
             val neuronCount = topology[it] + 1
             val outputCount = if (it == layerCount - 1) 0 else topology[it + 1]
-            Layer(size = neuronCount, init = {
+            Array(size = neuronCount, init = {
                 Neuron(it, activationFunction, outputCount)
-            })
-        })
+            }).toList()
+        }).toList()
     }
 
     fun think(inputs: Array<Double>) {
-        (0 until inputs.size).forEach { network[0][it].output = inputs[it] }
-
-        (1 until network.size).forEach { i ->
-            val previousLayer = network[i - 1]
-            val currentLayer = network[i]
+        network[0].zip(inputs).forEach { (neuron, input) -> neuron.output = input }
+        network.zipWithNext().forEach { (previousLayer, currentLayer) ->
             currentLayer.dropLast(1).forEach { it.think(previousLayer) }
         }
     }
@@ -46,10 +44,11 @@ class Brain(activationFunction: ActivationFunction, topology: Array<Int>) {
         remember()
     }
 
-    private fun computeError(result: Array<Double>): Double {
+    private fun computeError(correctResult: Array<Double>): Double {
         val outputLayer = network.last()
-        var error = (0 until outputLayer.lastIndex).map { result[it] - outputLayer[it].output }
-                .sumByDouble { it * it }
+        var error = outputLayer.dropLast(1).zip(correctResult).sumByDouble { (neuron, result) ->
+            pow(result - neuron.output, 2.0)
+        }
         error /= outputLayer.lastIndex
         error = sqrt(error)
         error += lambdaW * sqrt(network.sumByDouble {
@@ -69,17 +68,13 @@ class Brain(activationFunction: ActivationFunction, topology: Array<Int>) {
     }
 
     private fun teachLayers() {
-        (network.lastIndex - 1 downTo 1).forEach {
-            val layer = network[it]
-            val nextLayer = network[it + 1]
+        network.drop(1).zipWithNext().asReversed().forEach { (layer, nextLayer) ->
             layer.forEach { it.learnFromNextLayer(nextLayer) }
         }
     }
 
     private fun remember() {
-        (network.lastIndex downTo 1).forEach {
-            val layer = network[it]
-            val previousLayer = network[it - 1]
+        network.zipWithNext().asReversed().forEach { (previousLayer, layer)->
             layer.dropLast(1).forEach { it.remember(previousLayer) }
         }
     }
