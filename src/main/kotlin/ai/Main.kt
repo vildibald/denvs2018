@@ -12,13 +12,13 @@ val trainingFile = "testData.txt"
 
 fun generateXorTrainingData(fileName: String, sampleCount: Int): File {
     val lines = mutableListOf<String>()
-    lines.add("2 4 1")
+    lines += "2 4 1"
     for (i in sampleCount downTo 0) {
         val n1 = (2.0 * Math.random()).toInt()
         val n2 = (2.0 * Math.random()).toInt()
         val o = n1 xor n2
-        lines.add("in: $n1 $n2")
-        lines.add("out: $o")
+        lines += "in: $n1 $n2"
+        lines += "out: $o"
     }
     val path = Files.write(Paths.get(fileName), lines, Charset.defaultCharset())
     return File(path.toUri())
