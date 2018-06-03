@@ -19,14 +19,14 @@ class Brain(activationFunction: ActivationFunction, topology: Array<Int>) {
 
     init {
         val layerCount = topology.size
-        network = Array(size = layerCount, init = {
+        network = Array(size = layerCount) {
             // it znamena i-tu vrstvu
             val neuronCount = topology[it] + 1
             val outputCount = if (it == layerCount - 1) 0 else topology[it + 1]
-            Array(size = neuronCount, init = {
+            Array(size = neuronCount) {
                 Neuron(it, activationFunction, outputCount)
-            }).toList()
-        }).toList()
+            }.toList()
+        }.toList()
     }
 
     fun think(inputs: Array<Double>) {
